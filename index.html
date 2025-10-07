@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Películas Online</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      color: white;
+      text-align: center;
+    }
+    #contenedor {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+    .box {
+      background: #1a1a1a;
+      border-radius: 10px;
+      width: 180px;
+      padding: 15px;
+      box-shadow: 0 0 10px #00ff9d33;
+    }
+    .box img {
+      width: 100%;
+      border-radius: 10px;
+    }
+    .box h2 {
+      font-size: 18px;
+      color: #00ff9d;
+    }
+    button {
+      background: #00ff9d;
+      border: none;
+      color: black;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    #detalle {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.95);
+      padding: 20px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎬 Catálogo de Películas</h1>
+  <div id="contenedor"></div>
+  <div id="detalle"></div>
+
+  <script>
+    async function cargar() {
+      const res = await fetch("https://TU_DOMINIO_O_IP/api/publicaciones");
+      const data = await res.json();
+
+      const cont = document.getElementById("contenedor");
+      cont.innerHTML = "";
+
+      Object.values(data).forEach(p => {
+        const box = document.createElement("div");
+        box.className = "box";
+        box.innerHTML = `
+          <img src="${p.imagen}">
+          <h2>${p.titulo}</h2>
+          <button>Ver</button>
+        `;
+        box.querySelector("button").onclick = () => mostrar(p);
+        cont.appendChild(box);
+      });
+    }
+
+    function mostrar(p) {
+      const d = document.getElementById("detalle");
+      d.innerHTML = `
+        <img src="${p.imagen}" width="250">
+        <h2>${p.titulo}</h2>
+        <p>${p.descripcion}</p>
+        <a href="${p.trailer}" target="_blank">🎬 Trailer</a><br>
+        <a href="${p.verOnline}" target="_blank">▶️ Ver Online</a><br>
+        <a href="${p.descargar}" target="_blank">⬇️ Descargar</a><br>
+        <button onclick="this.parentElement.style.display='none'">Cerrar</button>
+      `;
+      d.style.display = "block";
+    }
+
+    cargar();
+  </script>
+</body>
+</html>
