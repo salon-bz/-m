@@ -4,6 +4,60 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Películas Online</title>
+  <script type="module">
+    // Importar Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCj0DVSi2LKWVEIb0vVBNmBk5kwNKwwJrg",
+      authDomain: "storeacounts-d0ca8.firebaseapp.com",
+      databaseURL: "https://storeacounts-d0ca8-default-rtdb.firebaseio.com",
+      projectId: "storeacounts-d0ca8",
+      storageBucket: "storeacounts-d0ca8.firebasestorage.app",
+      messagingSenderId: "822442149761",
+      appId: "1:822442149761:web:bb1d97c5c5f170ddb10a80"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const publicacionesRef = ref(db, "publicaciones");
+
+    const contenedor = document.getElementById("contenedor");
+
+    onValue(publicacionesRef, (snapshot) => {
+      contenedor.innerHTML = "";
+      snapshot.forEach((childSnapshot) => {
+        const data = childSnapshot.val();
+
+        const box = document.createElement("div");
+        box.classList.add("box");
+        box.innerHTML = `
+          <img src="${data.imagen}" alt="${data.titulo}">
+          <h2>${data.titulo}</h2>
+          <button class="ver-btn">Ver</button>
+        `;
+        box.querySelector(".ver-btn").addEventListener("click", () => mostrarDetalle(data));
+        contenedor.appendChild(box);
+      });
+    });
+
+    function mostrarDetalle(data) {
+      document.getElementById("detalle").innerHTML = `
+        <img src="${data.imagen}" alt="${data.titulo}">
+        <h2>${data.titulo}</h2>
+        <p>${data.descripcion}</p>
+        <a href="${data.trailer}" target="_blank" class="btn">🎬 Ver Trailer</a>
+        <a href="${data.verOnline}" target="_blank" class="btn">▶️ Ver Online</a>
+        <a href="${data.descargar}" target="_blank" class="btn">⬇️ Descargar</a>
+        <button id="cerrar">Cerrar</button>
+      `;
+      document.getElementById("detalle").style.display = "block";
+      document.getElementById("cerrar").addEventListener("click", () => {
+        document.getElementById("detalle").style.display = "none";
+      });
+    }
+  </script>
 
   <style>
     body {
@@ -79,49 +133,5 @@
   <h1>🎬 Catálogo de Películas</h1>
   <div id="contenedor"></div>
   <div id="detalle"></div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-    import { firebaseConfig } from "./firebase-config.js"; // 🔐 configuración externa
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const publicacionesRef = ref(db, "publicaciones");
-    const contenedor = document.getElementById("contenedor");
-
-    onValue(publicacionesRef, (snapshot) => {
-      contenedor.innerHTML = "";
-      snapshot.forEach((childSnapshot) => {
-        const data = childSnapshot.val();
-
-        const box = document.createElement("div");
-        box.classList.add("box");
-        box.innerHTML = `
-          <img src="${data.imagen}" alt="${data.titulo}">
-          <h2>${data.titulo}</h2>
-          <button class="ver-btn">Ver</button>
-        `;
-        box.querySelector(".ver-btn").addEventListener("click", () => mostrarDetalle(data));
-        contenedor.appendChild(box);
-      });
-    });
-
-    function mostrarDetalle(data) {
-      document.getElementById("detalle").innerHTML = `
-        <img src="${data.imagen}" alt="${data.titulo}">
-        <h2>${data.titulo}</h2>
-        <p>${data.descripcion}</p>
-        <a href="${data.trailer}" target="_blank" class="btn">🎬 Ver Trailer</a>
-        <a href="${data.verOnline}" target="_blank" class="btn">▶️ Ver Online</a>
-        <a href="${data.descargar}" target="_blank" class="btn">⬇️ Descargar</a>
-        <button id="cerrar">Cerrar</button>
-      `;
-      document.getElementById("detalle").style.display = "block";
-      document.getElementById("cerrar").addEventListener("click", () => {
-        document.getElementById("detalle").style.display = "none";
-      });
-    }
-  </script>
 </body>
 </html>
